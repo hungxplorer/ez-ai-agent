@@ -212,22 +212,23 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
       if (requestSchema.type === 'json') {
         prompt += 'You will receive input in JSON format with the following fields:\n';
         requestSchema.fields.forEach(field => {
-          prompt += `- ${field.name}${field.required ? ' (required)' : ''}: ${field.description || field.type}\n`;
+          prompt += `- ${field.name} (${field.type}): ${field.description}\n`;
         });
       } else {
         prompt += 'You will receive input as plain text.\n';
       }
     }
+
+    // Always add output format section
+    prompt += '\n\n### Output Format:\n';
     
-    // Add response schema information only if fields exist and have length > 0
-    if (responseSchema?.type === 'json' && responseSchema.fields && responseSchema.fields.length > 0) {
-      prompt += '\n\n### Output Format:\n';
+    // Check if response schema exists and has fields
+    if (responseSchema?.fields && responseSchema.fields.length > 0) {
       prompt += 'You should respond with JSON containing the following fields:\n';
       responseSchema.fields.forEach(field => {
-        prompt += `- ${field.name}${field.required ? ' (required)' : ''}: ${field.description || field.type}\n`;
+        prompt += `- ${field.name} (${field.type}): ${field.description}\n`;
       });
-    } else if (responseSchema?.type === 'text' && (!responseSchema.fields || responseSchema.fields.length === 0)) {
-      prompt += '\n\n### Output Format:\n';
+    } else {
       prompt += 'You should respond with plain text.\n';
     }
     
@@ -376,9 +377,28 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
                       <Controller
                         name="apiPath"
                         control={control}
-                        rules={{ required: 'API Path is required' }}
+                        rules={{ 
+                          required: 'API Path is required',
+                          validate: {
+                            hasApiPrefix: (value) => 
+                              value.startsWith('/api/') || 'API Path must start with /api/',
+                          }
+                        }}
                         render={({ field }) => (
-                          <Input {...field} placeholder="/api/my-agent" size="sm" />
+                          <Input 
+                            {...field} 
+                            placeholder="/api/my-agent" 
+                            size="sm"
+                            value={field.value}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Ensure /api/ prefix is always present
+                              if (!value.startsWith('/api/')) {
+                                return;
+                              }
+                              field.onChange(value);
+                            }}
+                          />
                         )}
                       />
                       <FormErrorMessage>{errors.apiPath?.message}</FormErrorMessage>
@@ -460,7 +480,6 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
                             schemaType="request" 
                             initialSchema={requestSchema}
                             onChange={handleRequestSchemaChange}
-                            hideDescriptions={true}
                           />
                         </TabPanel>
                         <TabPanel px={4} py={4}>
@@ -468,7 +487,6 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
                             schemaType="response" 
                             initialSchema={responseSchema}
                             onChange={handleResponseSchemaChange}
-                            hideDescriptions={true}
                           />
                         </TabPanel>
                       </TabPanels>

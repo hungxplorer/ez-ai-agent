@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    platform: linux/amd64

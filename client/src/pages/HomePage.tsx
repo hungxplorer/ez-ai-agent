@@ -498,26 +498,8 @@ const HomePage = () => {
               <Icon as={FiServer} boxSize={{ base: 12, md: 16 }} color="gray.300" />
               <Heading size="lg" color={textColor}>No AI Agents Yet</Heading>
               <Text color={subtleTextColor} maxW="600px" mx="auto" fontSize="lg">
-                Create your first AI agent to start building applications powered by large language models.
-                Unlock the potential of AI in your projects with just a few clicks.
+                Start building AI-powered applications with a few clicks.
               </Text>
-              <Button 
-                onClick={handleAddAgent}
-                bgGradient="linear(to-r, brand.500, accent.500)"
-                color="white"
-                _hover={{ 
-                  bgGradient: "linear(to-r, brand.600, accent.600)",
-                  boxShadow: "0 4px 20px rgba(71, 118, 230, 0.4)"
-                }}
-                leftIcon={<FiPlus />}
-                size="lg"
-                borderRadius="full"
-                px={8}
-                py={6}
-                fontSize="md"
-              >
-                Create First Agent
-              </Button>
             </VStack>
           </Card>
         ) : (

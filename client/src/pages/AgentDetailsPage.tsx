@@ -876,10 +876,10 @@ const AgentDetailsPage = () => {
                       <AlertTitle>How to Access Your API</AlertTitle>
                       <AlertDescription>
                         <Text mb={1}>
-                          <strong>Recommended method:</strong> Use the API path directly at <Code>{window.location.origin}/api${agent.apiPath}</Code>
+                          <strong>Recommended method:</strong> Use the API path directly at <Code>http://localhost:3000${agent.apiPath}</Code>
                         </Text>
                         <Text>
-                          Alternatively, you can also access your agent using the agent ID at <Code>{window.location.origin}/api/agents/${agent.id}/execute</Code>
+                          Alternatively, you can also access your agent using the agent ID at <Code>http://localhost:3000/api/agents/${agent.id}/execute</Code>
                         </Text>
                       </AlertDescription>
                     </Box>
@@ -906,13 +906,13 @@ const AgentDetailsPage = () => {
                         >
                           <Text fontWeight="bold" mb={2} color="cyan.300">API Path:</Text>
                           <Text mb={4} color="green.300">
-                            ${window.location.origin}/api${agent.apiPath}
+                            http://localhost:3000${agent.apiPath}
                           </Text>
                           
                           <Text fontWeight="bold" mb={2} color="cyan.300">cURL Example:</Text>
                           <Text whiteSpace="pre" mb={4}>
 {`curl -X POST \\
-  ${window.location.origin}/api${agent.apiPath} \\
+  http://localhost:3000${agent.apiPath} \\
   -H "Content-Type: application/json" \\
   -d '${agent.requestSchema?.type === 'json' ? 
     JSON.stringify(
@@ -929,7 +929,7 @@ const AgentDetailsPage = () => {
                           
                           <Text fontWeight="bold" mb={2} color="cyan.300">JavaScript Example:</Text>
                           <Text whiteSpace="pre" mb={4}>
-{`fetch('${window.location.origin}/api${agent.apiPath}', {
+{`fetch('http://localhost:3000${agent.apiPath}', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(${agent.requestSchema?.type === 'json' ? 
@@ -954,7 +954,7 @@ const AgentDetailsPage = () => {
 import json
 
 # Using API path
-url = "${window.location.origin}/api${agent.apiPath}"
+url = "http://localhost:3000${agent.apiPath}"
 headers = {
     "Content-Type": "application/json"
 }
@@ -992,7 +992,7 @@ print(data)`}
                           <Text fontWeight="bold" mb={2} color="cyan.300">Using API Path (Recommended):</Text>
                           <Text whiteSpace="pre" mb={4}>
 {`curl -X POST \\
-  ${window.location.origin}/api${agent.apiPath} \\
+  http://localhost:3000${agent.apiPath} \\
   -H "Content-Type: application/json" \\
   -d '${agent.requestSchema?.type === 'json' ? 
     JSON.stringify(
@@ -1010,7 +1010,7 @@ print(data)`}
                           <Text fontWeight="bold" mb={2} color="cyan.300">Using Agent ID:</Text>
                           <Text whiteSpace="pre">
 {`curl -X POST \\
-  ${window.location.origin}/api/agents/${agent.id}/execute \\
+  http://localhost:3000/api/agents/${agent.id}/execute \\
   -H "Content-Type: application/json" \\
   -d '${agent.requestSchema?.type === 'json' ? 
     JSON.stringify(
@@ -1042,7 +1042,7 @@ print(data)`}
                           <Text whiteSpace="pre" mb={4}>
 {`// Using fetch API with API path
 async function callAPI() {
-  const response = await fetch('${window.location.origin}/api${agent.apiPath}', {
+  const response = await fetch('http://localhost:3000${agent.apiPath}', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -1071,7 +1071,7 @@ callAPI();`}
                           <Text whiteSpace="pre">
 {`// Using fetch API with agent ID
 async function callAPI() {
-  const response = await fetch('${window.location.origin}/api/agents/${agent.id}/execute', {
+  const response = await fetch('http://localhost:3000/agents/${agent.id}/execute', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -1115,7 +1115,7 @@ callAPI();`}
 import json
 
 # Using API path
-url = "${window.location.origin}/api${agent.apiPath}"
+url = "http://localhost:3000${agent.apiPath}"
 headers = {
     "Content-Type": "application/json"
 }
@@ -1143,7 +1143,7 @@ print(data)`}
 import json
 
 # Using agent ID
-url = "${window.location.origin}/api/agents/${agent.id}/execute"
+url = "http://localhost:3000/api/agents/${agent.id}/execute"
 headers = {
     "Content-Type": "application/json"
 }

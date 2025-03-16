@@ -1,22 +1,13 @@
 import {
   Box,
   Flex,
-  FormControl,
-  FormLabel,
+  Text,
   Input,
   Select,
-  Switch,
-  Text,
-  VStack,
-  HStack,
+  FormControl,
+  FormLabel,
   IconButton,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Badge,
-  Tooltip,
+  Button,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useState, useEffect, useRef } from 'react';
@@ -36,6 +27,20 @@ const defaultField: SchemaField = {
   description: '',
 };
 
+const defaultRequestField: SchemaField = {
+  name: 'input',
+  type: 'string',
+  required: true,
+  description: 'Input for the agent',
+};
+
+const defaultResponseField: SchemaField = {
+  name: 'output',
+  type: 'string', 
+  required: true,
+  description: 'Output from the agent',
+};
+
 const SchemaBuilder = ({ 
   schemaType, 
   initialSchema,
@@ -49,7 +54,7 @@ const SchemaBuilder = ({
     initialSchema?.description || ''
   );
   const [fields, setFields] = useState<SchemaField[]>(
-    initialSchema?.fields || []
+    initialSchema?.fields || (schemaType === 'request' ? [defaultRequestField] : [])
   );
   
   // Ref để theo dõi việc đang cập nhật từ initialSchema
@@ -64,6 +69,9 @@ const SchemaBuilder = ({
 
   // Ref để theo dõi loại schema trước đó
   const prevSchemaTypeRef = useRef<'json' | 'text' | null>(null);
+  
+  // Ref for debounce timer
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (initialSchema) {
@@ -108,7 +116,12 @@ const SchemaBuilder = ({
   }, [schemaType_, description, fields, onChange]);
 
   const addField = () => {
-    setFields([...fields, { ...defaultField, name: `field${fields.length + 1}` }]);
+    const newField = schemaType === 'request' 
+      ? { ...defaultRequestField, name: `input_${fields.length + 1}` }
+      : schemaType === 'response'
+      ? { ...defaultResponseField, name: `output_${fields.length + 1}` }
+      : { ...defaultField };
+    setFields([...fields, newField]);
   };
 
   const removeField = (index: number) => {
@@ -116,9 +129,23 @@ const SchemaBuilder = ({
   };
 
   const updateField = (index: number, field: Partial<SchemaField>) => {
-    setFields(
-      fields.map((f, i) => (i === index ? { ...f, ...field } : f))
-    );
+    // For name and type, update immediately
+    if (field.name !== undefined || field.type !== undefined) {
+      setFields(
+        fields.map((f, i) => (i === index ? { ...f, ...field } : f))
+      );
+    } else {
+      // For description, use debounced update
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      
+      debounceTimerRef.current = setTimeout(() => {
+        setFields(
+          fields.map((f, i) => (i === index ? { ...f, ...field } : f))
+        );
+      }, 300);
+    }
   };
 
   useEffect(() => {
@@ -136,7 +163,14 @@ const SchemaBuilder = ({
       !isUpdatingFromPropRef.current
     ) {
       console.log('Creating default fields for JSON schema');
-      setFields([{ ...defaultField, name: 'field1' }]);
+      if (schemaType === 'request') {
+        setFields([defaultRequestField]);
+      } else if (schemaType === 'response') {
+        // Response schema is optional
+        // setFields([defaultResponseField]);
+      } else {
+        setFields([{ ...defaultField, name: 'data' }]);
+      }
     }
     
     // Xóa fields khi chuyển sang text
@@ -144,155 +178,112 @@ const SchemaBuilder = ({
       console.log('Clearing fields for text schema');
       setFields([]);
     }
-  }, [schemaType_, fields.length]);
+  }, [schemaType_, fields.length, schemaType]);
 
-  return (
-    <Box>
-      <HStack spacing={4} mb={3}>
-        <FormControl flex="1">
-          <FormLabel fontSize="xs">Type</FormLabel>
-          <Select
+  const renderFieldRow = (field: SchemaField, index: number) => {
+    return (
+      <Flex key={index} gap={2} mb={3} align="center">
+        <FormControl flex={4}>
+          <Input
+            placeholder="Field name"
+            value={field.name}
+            onChange={(e) => updateField(index, { name: e.target.value })}
             size="sm"
-            value={schemaType_}
-            onChange={(e) => setSchemaType(e.target.value as 'json' | 'text')}
+          />
+        </FormControl>
+        
+        <FormControl flex={3}>
+          <Select
+            value={field.type}
+            onChange={(e) => updateField(index, { type: e.target.value as SchemaField['type'] })}
+            size="sm"
           >
-            <option value="json">JSON</option>
-            <option value="text">Plain Text</option>
+            <option value="string">String</option>
+            <option value="number">Number</option>
+            <option value="boolean">Boolean</option>
+            <option value="object">Object</option>
+            <option value="array">Array</option>
           </Select>
         </FormControl>
+        
+        <IconButton
+          aria-label="Remove field"
+          icon={<DeleteIcon />}
+          onClick={() => removeField(index)}
+          size="sm"
+          variant="ghost"
+          colorScheme="red"
+        />
+      </Flex>
+    );
+  };
 
+  const renderFieldWithDescription = (field: SchemaField, index: number) => {
+    return (
+      <Box key={index} mb={4} p={3} borderWidth="1px" borderRadius="md" borderColor="gray.200">
+        {renderFieldRow(field, index)}
+        
         {!hideDescriptions && (
-          <FormControl flex="2">
-            <FormLabel fontSize="xs">Description</FormLabel>
+          <FormControl mt={2}>
             <Input
+              placeholder="Field description (optional)"
+              defaultValue={field.description || ''}
+              onChange={(e) => {
+                // Clear any existing timeout
+                if (debounceTimerRef.current) {
+                  clearTimeout(debounceTimerRef.current);
+                }
+                
+                // Set a new timeout
+                debounceTimerRef.current = setTimeout(() => {
+                  updateField(index, { description: e.target.value });
+                }, 100);
+              }}
               size="sm"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={`Describe the ${schemaType} schema...`}
             />
           </FormControl>
         )}
-      </HStack>
+      </Box>
+    );
+  };
 
-      {schemaType_ === 'json' && (
-        <Box>
-          <Flex justify="space-between" align="center" mb={2}>
-            <Text fontSize="xs" fontWeight="medium">Fields</Text>
-            <Tooltip label="Add Field">
-              <IconButton
-                aria-label="Add field"
-                icon={<AddIcon />}
-                size="xs"
-                onClick={addField}
-                colorScheme="blue"
-                variant="ghost"
-              />
-            </Tooltip>
-          </Flex>
-
-          {fields.length === 0 ? (
-            <Text fontSize="xs" color="gray.500" textAlign="center" py={2}>
-              No fields defined. Click "+" to add fields.
-            </Text>
-          ) : (
-            <Accordion allowMultiple size="sm" defaultIndex={[0]}>
-              {fields.map((field, index) => (
-                <AccordionItem key={index} borderWidth="1px" borderRadius="md" mb={2} borderColor="gray.200">
-                  <h2>
-                    <AccordionButton py={1}>
-                      <Box flex="1" textAlign="left" fontSize="sm">
-                        {field.name || `Field ${index + 1}`}
-                        {field.required && (
-                          <Text as="span" color="red.500" ml={1}>
-                            *
-                          </Text>
-                        )}
-                      </Box>
-                      <Badge size="sm" colorScheme="blue" mr={2}>
-                        {field.type}
-                      </Badge>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={2} pt={2}>
-                    <VStack spacing={2} align="stretch">
-                      <HStack spacing={2}>
-                        <FormControl flex="3">
-                          <FormLabel fontSize="xs" mb={0}>Name</FormLabel>
-                          <Input
-                            size="xs"
-                            value={field.name}
-                            onChange={(e) =>
-                              updateField(index, { name: e.target.value })
-                            }
-                          />
-                        </FormControl>
-
-                        <FormControl flex="2">
-                          <FormLabel fontSize="xs" mb={0}>Type</FormLabel>
-                          <Select
-                            size="xs"
-                            value={field.type}
-                            onChange={(e) =>
-                              updateField(index, {
-                                type: e.target.value as SchemaField['type'],
-                              })
-                            }
-                          >
-                            <option value="string">String</option>
-                            <option value="number">Number</option>
-                            <option value="boolean">Boolean</option>
-                            <option value="object">Object</option>
-                            <option value="array">Array</option>
-                          </Select>
-                        </FormControl>
-                      </HStack>
-
-                      {!hideDescriptions && (
-                        <FormControl>
-                          <FormLabel fontSize="xs" mb={0}>Description</FormLabel>
-                          <Input
-                            size="xs"
-                            value={field.description || ''}
-                            onChange={(e) =>
-                              updateField(index, { description: e.target.value })
-                            }
-                          />
-                        </FormControl>
-                      )}
-
-                      <Flex justify="space-between" align="center">
-                        <FormControl display="flex" alignItems="center">
-                          <Switch
-                            size="sm"
-                            isChecked={field.required}
-                            onChange={(e) =>
-                              updateField(index, { required: e.target.checked })
-                            }
-                            mr={1}
-                          />
-                          <FormLabel fontSize="xs" mb={0}>
-                            Required
-                          </FormLabel>
-                        </FormControl>
-
-                        <IconButton
-                          aria-label="Remove field"
-                          icon={<DeleteIcon />}
-                          size="xs"
-                          colorScheme="red"
-                          variant="ghost"
-                          onClick={() => removeField(index)}
-                        />
-                      </Flex>
-                    </VStack>
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          )}
-        </Box>
-      )}
+  return (
+    <Box>
+      <Flex mb={4} gap={2} align="center">
+        <FormControl>
+          <FormLabel fontSize="sm">Schema Type</FormLabel>
+          <Select
+            value="json"
+            isDisabled={true}
+            size="sm"
+          >
+            <option value="json">JSON</option>
+          </Select>
+        </FormControl>
+      </Flex>
+      
+      <Box>
+        <Flex justify="space-between" align="center" mb={2}>
+          <Text fontSize="sm" fontWeight="medium">Fields</Text>
+          <Button
+            size="xs"
+            leftIcon={<AddIcon />}
+            onClick={addField}
+            colorScheme="blue"
+            variant="outline"
+          >
+            Add Field
+          </Button>
+        </Flex>
+        
+        {fields.map((field, index) => renderFieldWithDescription(field, index))}
+        
+        {fields.length === 0 && (
+          <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>
+            No fields defined. Click "Add Field" to create one.
+          </Text>
+        )}
+      </Box>
     </Box>
   );
 };
