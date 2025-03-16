@@ -34,7 +34,8 @@ wait_for_db() {
 
 # Wait for database before starting the application
 if wait_for_db; then
-  echo "Skipping database migrations for now..."
+  echo "Running database migrations..."
+  npm run migrate
   
   if [ "$NODE_ENV" = "development" ]; then
     echo "Starting application in development mode..."

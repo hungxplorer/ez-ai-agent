@@ -37,6 +37,13 @@ cd server
 docker-compose up
 ```
 
+The system will automatically:
+
+- Start the PostgreSQL database
+- Run all necessary database migrations
+- Apply seed data
+- Start the backend server
+
 For Frontend:
 
 ```bash
@@ -56,17 +63,23 @@ yarn install
 yarn dev
 ```
 
-2. Backend Setup:
+2. Database Setup:
+
+   - Ensure PostgreSQL is installed and running
+   - Update database configuration in the server settings
+   - Create a database named `llm_api_builder`
+
+3. Backend Setup:
 
 ```bash
 cd server
 yarn install
+# Run migrations and seed data
+yarn migrate
+yarn seed
+# Start the server
 yarn dev
 ```
-
-3. Database Setup:
-   - Ensure PostgreSQL is installed and running
-   - Update database configuration in the server settings
 
 ### 3. Create API Endpoints
 
