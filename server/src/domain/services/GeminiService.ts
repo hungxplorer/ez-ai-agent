@@ -30,34 +30,32 @@ export class GeminiService implements LLMService {
           // Try to parse the response as JSON
           logger.info(`Formatting response as JSON for agent: ${agent.name}`);
 
-          // First try to extract JSON if it's wrapped in markdown code blocks
-          const jsonMatch = rawResponse.match(
-            /```(?:json)?\s*([\s\S]*?)\s*```/
-          );
-          if (jsonMatch && jsonMatch[1]) {
-            try {
-              return JSON.parse(jsonMatch[1]);
-            } catch (innerError) {
-              logger.warn(
-                "Failed to parse JSON from code block, trying raw response"
-              );
-            }
+          try {
+            // Use the parseJsonString function to handle various JSON formats
+            return this.parseJsonString(rawResponse);
+          } catch (parseError) {
+            logger.error(
+              `Failed to parse response as JSON for agent: ${agent.name}`,
+              parseError
+            );
+
+            // If parsing fails, return the raw response as a string instead of throwing an error
+            logger.warn(
+              `Returning raw response as string due to JSON parsing failure`
+            );
+            return {
+              rawResponse: rawResponse,
+              parsingError: "Failed to parse as JSON. Returning raw response.",
+            };
           }
-
-          return JSON.parse(rawResponse);
-        } catch (parseError) {
+        } catch (error) {
           logger.error(
-            `Failed to parse response as JSON for agent: ${agent.name}`,
-            parseError
-          );
-
-          // If parsing fails, return the raw response as a string instead of throwing an error
-          logger.warn(
-            `Returning raw response as string due to JSON parsing failure`
+            `Error in JSON processing for agent: ${agent.name}`,
+            error
           );
           return {
             rawResponse: rawResponse,
-            parsingError: "Failed to parse as JSON. Returning raw response.",
+            parsingError: "Error in JSON processing. Returning raw response.",
           };
         }
       } else {
@@ -182,5 +180,39 @@ export class GeminiService implements LLMService {
     });
 
     return response.data;
+  }
+
+  /**
+   * Parse a JSON string with special handling for code blocks and escaped characters
+   * @param input The string to parse as JSON
+   * @returns The parsed JSON object
+   */
+  private parseJsonString(input: string): any {
+    // Loại bỏ code block đầu vào (```json, ```javascript, ```css, v.v.)
+    input = input.replace(/```(\w+)?/g, "").trim();
+
+    // Nếu chuỗi bị escape, giải mã nó
+    if (input.startsWith('"') && input.endsWith('"')) {
+      input = input.slice(1, -1).replace(/\\"/g, '"');
+    }
+
+    // Parse JSON thành object
+    const parsedJson = JSON.parse(input);
+
+    // Xử lý mọi thuộc tính chứa code block (```xxx\n...\n```)
+    function cleanCodeBlocks(obj: any): void {
+      for (const key in obj) {
+        if (typeof obj[key] === "string") {
+          obj[key] = obj[key]
+            .replace(/```[\w]*\n([\s\S]*?)\n```/g, "$1")
+            .trim();
+        } else if (typeof obj[key] === "object" && obj[key] !== null) {
+          cleanCodeBlocks(obj[key]); // Đệ quy nếu có object con
+        }
+      }
+    }
+
+    cleanCodeBlocks(parsedJson);
+    return parsedJson;
   }
 }

@@ -219,7 +219,7 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
     
     // Check if response schema exists and has fields
     if (responseSchema?.fields && responseSchema.fields.length > 0) {
-      prompt += 'You must respond with valid JSON data containing the following fields (do not include ```json or any code block markers):\n';
+      prompt += 'You must respond with valid JSON data strictly following the schema defined below. Your response must be a valid JSON object with exactly these fields (do not include ```json or any code block markers):\n';
       responseSchema.fields.forEach(field => {
         prompt += `- ${field.name} (${field.type}): ${field.description}\n`;
       });
