@@ -84,13 +84,36 @@ export class SchemaValidationService {
           `Response validation failed: Expected string but got ${typeof response}`
         );
         // Convert to string if possible
-        return String(response);
+        try {
+          if (typeof response === "object" && response !== null) {
+            // Check if this is a failed JSON parsing result with rawResponse
+            if (response.rawResponse && response.parsingError) {
+              return response.rawResponse;
+            }
+            return JSON.stringify(response);
+          }
+          return String(response);
+        } catch (error) {
+          logger.error("Failed to convert response to string:", error);
+          return String(response);
+        }
       }
       return response;
     }
 
     // For JSON schema
     if (schema.type === "json") {
+      // Check if this is a failed JSON parsing result with rawResponse
+      if (
+        typeof response === "object" &&
+        response !== null &&
+        response.rawResponse &&
+        response.parsingError
+      ) {
+        logger.warn("Received a failed JSON parsing result, returning as is");
+        return response;
+      }
+
       // If response is a string, try to parse it as JSON
       let jsonResponse = response;
       if (typeof response === "string") {
@@ -98,10 +121,14 @@ export class SchemaValidationService {
           jsonResponse = JSON.parse(response);
         } catch (error) {
           logger.error("Failed to parse response as JSON:", error);
-          throw new AppError(
-            "Invalid response format: Expected valid JSON",
-            500
+          // Return the raw string instead of throwing an error
+          logger.warn(
+            "Returning raw string response due to JSON parsing failure"
           );
+          return {
+            rawResponse: response,
+            parsingError: "Failed to parse as JSON. Returning raw response.",
+          };
         }
       }
 
@@ -111,8 +138,20 @@ export class SchemaValidationService {
       }
 
       // Validate against defined fields
-      this.validateJsonAgainstFields(jsonResponse, schema.fields, "response");
-      return jsonResponse;
+      try {
+        this.validateJsonAgainstFields(jsonResponse, schema.fields, "response");
+        return jsonResponse;
+      } catch (error) {
+        logger.error("Failed to validate JSON against fields:", error);
+        // If validation fails, return the original response with error info
+        if (typeof response === "string") {
+          return {
+            rawResponse: response,
+            validationError: (error as Error).message,
+          };
+        }
+        return response;
+      }
     }
 
     // If we get here, the schema type is not supported
@@ -162,7 +201,27 @@ export class SchemaValidationService {
             context === "request" ? 400 : 500
           );
         }
-
+        // Special handling for string fields - convert objects to strings
+        else if (
+          expectedType === "string" &&
+          actualType === "object" &&
+          json[field.name] !== null
+        ) {
+          try {
+            // Convert object to string
+            json[field.name] = JSON.stringify(json[field.name]);
+            logger.warn(`Converted object to string for field: ${field.name}`);
+          } catch (error) {
+            logger.error(
+              `Failed to convert object to string for field: ${field.name}`,
+              error
+            );
+            throw new AppError(
+              `Invalid ${context} field type: ${field.name} should be ${expectedType} but got ${actualType}`,
+              context === "request" ? 400 : 500
+            );
+          }
+        }
         // Type checking for other types
         else if (
           expectedType !== "array" &&

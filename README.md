@@ -115,6 +115,12 @@ You can test your created APIs through:
 - Built-in Execute feature in the View Detail page
 - Postman or any other API testing tool
 
+## Known Issues
+
+The following is a known issue that we are currently working on:
+
+1. **Response Schema UI Lag**: When entering information in the response schema builder, the UI may respond slowly. This is due to the debounce mechanism in the schema builder component. We recommend typing slowly when configuring response schemas. AI is actively working on optimizing this performance issue.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

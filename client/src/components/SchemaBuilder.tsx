@@ -96,8 +96,6 @@ const SchemaBuilder = ({
       const hasFieldsChanged = JSON.stringify(prevSchemaRef.current.fields) !== JSON.stringify(fields);
       
       if (hasTypeChanged || hasDescriptionChanged || hasFieldsChanged) {
-        console.log('Schema changed, calling onChange');
-        
         // Cập nhật ref trước đó
         prevSchemaRef.current = {
           type: schemaType_,

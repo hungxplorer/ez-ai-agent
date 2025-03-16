@@ -48,11 +48,14 @@ export class ChatGPTService implements LLMService {
             parseError
           );
 
-          // If parsing fails, throw an error since we need valid JSON
-          throw new AppError(
-            "LLM returned invalid JSON response. Please try again or adjust your system prompt to ensure valid JSON output.",
-            500
+          // If parsing fails, return the raw response as a string instead of throwing an error
+          logger.warn(
+            `Returning raw response as string due to JSON parsing failure`
           );
+          return {
+            rawResponse: rawResponse,
+            parsingError: "Failed to parse as JSON. Returning raw response.",
+          };
         }
       } else {
         // Return the raw text response

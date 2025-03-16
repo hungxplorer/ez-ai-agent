@@ -64,9 +64,6 @@ export const agentApi = {
     id: string,
     agentData: Partial<AIAgent>
   ): Promise<AIAgent> => {
-    console.log("API: Updating agent with ID:", id);
-    console.log("API: Update data:", JSON.stringify(agentData, null, 2));
-
     try {
       const response = await fetch(`${API_BASE_URL}/agents/${id}`, {
         method: "PUT",
@@ -75,7 +72,6 @@ export const agentApi = {
       });
 
       const data = await handleApiResponse(response);
-      console.log("API: Update response:", data);
       return data.data.agent;
     } catch (error) {
       console.error("API: Error updating agent:", error);
@@ -173,15 +169,11 @@ export const useAgentApi = () => {
       id: string,
       agentData: Partial<AIAgent>
     ): Promise<AIAgent> => {
-      console.log("Hook API: Updating agent with ID:", id);
-      console.log("Hook API: Update data:", JSON.stringify(agentData, null, 2));
-
       try {
         const data = await api.put<{
           status: string;
           data: { agent: AIAgent };
         }>(`${API_BASE_URL}/agents/${id}`, agentData);
-        console.log("Hook API: Update response:", data);
         return data.data.agent;
       } catch (error) {
         console.error("Hook API: Error updating agent:", error);

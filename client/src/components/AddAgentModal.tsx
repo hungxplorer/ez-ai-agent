@@ -145,8 +145,6 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      console.log('Submitting agent form');
-      
       // Mark as updating
       isUpdatingAgentRef.current = true;
       
@@ -158,7 +156,6 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
       };
 
       if (agent) {
-        console.log('Updating agent:', agent.id);
         await updateAgent(agent.id, agentData);
         toast({
           title: 'Agent updated',
@@ -167,7 +164,6 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
           isClosable: true,
         });
       } else {
-        console.log('Creating new agent');
         await addAgent(agentData);
         toast({
           title: 'Agent created',
@@ -178,7 +174,6 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
       }
       
       // Ensure flag is reset after closing modal
-      console.log('Agent saved, closing modal');
       setTimeout(() => {
         onClose();
         
@@ -224,7 +219,7 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
     
     // Check if response schema exists and has fields
     if (responseSchema?.fields && responseSchema.fields.length > 0) {
-      prompt += 'You must respond with JSON containing the following fields:\n';
+      prompt += 'You must respond with valid JSON data containing the following fields (do not include ```json or any code block markers):\n';
       responseSchema.fields.forEach(field => {
         prompt += `- ${field.name} (${field.type}): ${field.description}\n`;
       });

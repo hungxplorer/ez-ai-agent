@@ -63,11 +63,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   updateAgent: async (id, agentData) => {
     set({ isLoading: true, error: null });
     try {
-      console.log("Store: Updating agent with ID:", id);
-      console.log("Store: Update data:", JSON.stringify(agentData, null, 2));
-
       const updatedAgent = await agentApi.updateAgent(id, agentData);
-      console.log("Store: Agent updated successfully:", updatedAgent);
 
       set((state) => ({
         agents: state.agents.map((agent) =>
