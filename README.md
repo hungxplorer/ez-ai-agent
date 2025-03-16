@@ -52,7 +52,6 @@ If you prefer to start services separately:
 
 ```bash
 cd server
-yarn
 docker-compose up
 ```
 
@@ -66,7 +65,6 @@ The system will automatically:
 
 ```bash
 cd client
-yarn
 docker-compose up
 ```
 
