@@ -224,12 +224,12 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
     
     // Check if response schema exists and has fields
     if (responseSchema?.fields && responseSchema.fields.length > 0) {
-      prompt += 'You should respond with JSON containing the following fields:\n';
+      prompt += 'You must respond with JSON containing the following fields:\n';
       responseSchema.fields.forEach(field => {
         prompt += `- ${field.name} (${field.type}): ${field.description}\n`;
       });
     } else {
-      prompt += 'You should respond with plain text.\n';
+      prompt += 'You must respond with plain text.\n';
     }
     
     return prompt;
