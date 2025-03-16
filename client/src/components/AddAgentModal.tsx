@@ -335,9 +335,10 @@ const AddAgentModal = ({ isOpen, onClose, agent }: AddAgentModalProps) => {
                           rules={{ required: 'LLM Model is required' }}
                           render={({ field }) => (
                             <Select {...field} size="sm">
-                              <option value="Gemini">Gemini</option>
-                              <option value="ChatGPT">ChatGPT</option>
-                              <option value="Deepseek">Deepseek</option>
+                              <option value="Gemini">Gemini (2.0-flash)</option>
+                              <option value="ChatGPT">ChatGPT (Coming Soon)</option>
+                              <option value="Deepseek">Deepseek (Coming Soon)</option>
+                              <option value="Claude" disabled>Claude (Coming Soon)</option>
                               <option value="Grok" disabled>Grok (Coming Soon)</option>
                             </Select>
                           )}

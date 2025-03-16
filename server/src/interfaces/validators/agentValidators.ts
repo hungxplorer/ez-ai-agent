@@ -34,7 +34,7 @@ export const validateAgentCreate = [
   body("llmType")
     .notEmpty()
     .withMessage("LLM type is required")
-    .isIn(["Gemini", "ChatGPT", "Deepseek", "Grok"])
+    .isIn(["Gemini", "ChatGPT", "Deepseek", "Grok", "Claude"])
     .withMessage("Invalid LLM type"),
 
   body("apiKey")
@@ -73,7 +73,7 @@ export const validateAgentUpdate = [
 
   body("llmType")
     .optional()
-    .isIn(["Gemini", "ChatGPT", "Deepseek", "Grok"])
+    .isIn(["Gemini", "ChatGPT", "Deepseek", "Grok", "Claude"])
     .withMessage("Invalid LLM type"),
 
   body("apiKey").optional().isString().withMessage("API key must be a string"),

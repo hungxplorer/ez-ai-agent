@@ -32,8 +32,25 @@ wait_for_db() {
   return 1
 }
 
+# Check if database exists and create it if it doesn't
+ensure_database_exists() {
+  echo "Checking if database '$DB_NAME' exists..."
+  
+  # Connect to default 'postgres' database to check if our target database exists
+  if ! PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -lqt | cut -d \| -f 1 | grep -qw $DB_NAME; then
+    echo "Database '$DB_NAME' does not exist. Creating..."
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE $DB_NAME;"
+    echo "Database '$DB_NAME' created successfully!"
+  else
+    echo "Database '$DB_NAME' already exists."
+  fi
+}
+
 # Wait for database before starting the application
 if wait_for_db; then
+  # Ensure database exists
+  ensure_database_exists
+  
   echo "Running database migrations..."
   npm run migrate
   

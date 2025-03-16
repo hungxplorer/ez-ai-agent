@@ -3,6 +3,7 @@ import { LLMService } from "~/domain/factories/../services/LLMService";
 import { GeminiService } from "~/domain/factories/../services/GeminiService";
 import { ChatGPTService } from "~/domain/factories/../services/ChatGPTService";
 import { DeepseekService } from "~/domain/factories/../services/DeepseekService";
+import { ClaudeService } from "~/domain/factories/../services/ClaudeService";
 import { AppError } from "~/interfaces/middlewares/errorHandler";
 
 export class LLMFactory {
@@ -14,6 +15,8 @@ export class LLMFactory {
         return new ChatGPTService();
       case "Deepseek":
         return new DeepseekService();
+      case "Claude":
+        return new ClaudeService();
       case "Grok":
         throw new AppError("Grok service is not yet implemented", 501);
       default:

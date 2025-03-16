@@ -24,7 +24,7 @@ The server is built using a clean architecture approach with the following layer
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- Node.js 20 or higher
 - Docker and Docker Compose (for containerized development)
 - PostgreSQL (if running locally)
 - API keys for LLM services (Gemini, OpenAI, Deepseek)
@@ -39,16 +39,6 @@ The server is built using a clean architecture approach with the following layer
 3. Install dependencies:
    ```
    npm install
-   ```
-4. Create a `.env` file based on `.env.example`:
-   ```
-   cp .env.example .env
-   ```
-5. Update the environment variables in the `.env` file, including your LLM API keys:
-   ```
-   GEMINI_API_KEY=your_gemini_api_key
-   OPENAI_API_KEY=your_openai_api_key
-   DEEPSEEK_API_KEY=your_deepseek_api_key
    ```
 
 ### Obtaining API Keys
@@ -92,10 +82,10 @@ This will start the server with nodemon, which will automatically restart when c
 To start the server and PostgreSQL using Docker Compose:
 
 ```
-docker-compose -f ../docker-compose.dev.yml up
+docker-compose up
 ```
 
-This will start the server and PostgreSQL in development mode.
+This will start the server and PostgreSQL.
 
 ### Database Migrations
 
@@ -161,33 +151,6 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=ez_ai_agent
-DB_SSL=false
-DB_MAX_RETRIES=5
-DB_RETRY_INTERVAL=2000
-```
-
-- `DB_MAX_RETRIES`: Maximum number of connection retry attempts (default: 5)
-- `DB_RETRY_INTERVAL`: Interval between retries in milliseconds (default: 2000)
-
-### Health Check Endpoints
-
-The server provides the following health check endpoints:
-
-- `GET /health`: General server health check
-- `GET /health/db`: Database connection health check
-
-Example response from `/health/db`:
-
-```json
-{
-  "status": "ok",
-  "database": {
-    "connected": true,
-    "timestamp": "2023-06-01T12:34:56.789Z",
-    "databaseName": "ez_ai_agent",
-    "host": "127.0.0.1"
-  }
-}
 ```
 
 ## Starting the Server

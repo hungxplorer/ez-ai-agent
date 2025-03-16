@@ -1,4 +1,4 @@
-export type LLMType = "Gemini" | "ChatGPT" | "Deepseek" | "Grok";
+export type LLMType = "Gemini" | "ChatGPT" | "Deepseek" | "Grok" | "Claude";
 
 export interface AIAgent {
   id: string;

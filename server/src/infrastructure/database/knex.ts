@@ -9,7 +9,7 @@ const config = {
     port: Number(process.env.DB_PORT) || 5432,
     user: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "postgres",
-    database: process.env.DB_NAME || "llm_api_builder",
+    database: process.env.DB_NAME || "ez_ai_agent",
     ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
   },
   pool: {

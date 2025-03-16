@@ -4,7 +4,9 @@
 
 ## Overview
 
-EZ AI Agent is an innovative open-source platform that revolutionizes the way developers create backend APIs. By simply providing a system prompt, API path, and request/response data structure, you can instantly generate fully functional APIs ready for use.
+EZ AI Agent is an innovative open-source platform that enables developers to quickly create LLM AI wrappers. By simply providing a system prompt, API path, and request/response data structure, you can instantly generate fully functional AI-powered APIs ready for use. This tool streamlines the process of integrating large language models into your applications, making AI implementation accessible and efficient.
+
+The core functionality of EZ AI Agent is to create new custom APIs that wrap around existing LLM provider APIs (like OpenAI, Google Gemini, DeepSeek). These wrapper APIs can be tailored to your specific use cases, allowing you to transform generic LLM capabilities into specialized, purpose-built endpoints that serve your application's exact needs.
 
 ## Tech Stack
 
@@ -21,14 +23,30 @@ Before starting, you'll need to get API keys from one of the following Language 
 - **Google Gemini**: [Get API key from Google AI Studio](https://makersuite.google.com/app/apikey)
 - **OpenAI (ChatGPT)**: [Get API key from OpenAI Platform](https://platform.openai.com/api-keys)
 - **DeepSeek**: [Get API key from DeepSeek Platform](https://platform.deepseek.com/)
+- **Anthropic (Claude)**: [Get API key from Anthropic Console](https://console.anthropic.com/keys)
 
 ### 2. Installation & Setup
 
-There are two ways to run the project:
+There are three ways to run the project:
 
-#### Method 1: Using Docker (Recommended)
+#### Method 1: Using Root Docker Compose (Recommended)
 
-This is the easiest way to get started, as it automatically sets up all required services.
+This is the easiest way to get started, as it automatically sets up all required services with a single command.
+
+```bash
+# From the project root directory
+docker-compose up
+```
+
+This will start:
+
+- The PostgreSQL database
+- The backend server (available at http://localhost:3000)
+- The frontend application (available at http://localhost:5173)
+
+#### Method 2: Using Individual Docker Compose Files
+
+If you prefer to start services separately:
 
 1. Start the Backend:
 
@@ -54,7 +72,7 @@ docker-compose up
 
 The frontend will be available at `http://localhost:5173` and will automatically connect to the backend at `http://localhost:3000`.
 
-#### Method 2: Manual Setup
+#### Method 3: Manual Setup
 
 If you prefer to run services individually:
 
@@ -70,7 +88,7 @@ yarn dev
 
    - Ensure PostgreSQL is installed and running
    - Update database configuration in the server settings
-   - Create a database named `llm_api_builder`
+   - Create a database named `ez_ai_agent`
 
 3. Backend Setup:
 
