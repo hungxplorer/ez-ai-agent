@@ -8,6 +8,18 @@ EZ AI Agent is an innovative open-source platform that enables developers to qui
 
 The core functionality of EZ AI Agent is to create new custom APIs that wrap around existing LLM provider APIs (like OpenAI, Google Gemini, DeepSeek). These wrapper APIs can be tailored to your specific use cases, allowing you to transform generic LLM capabilities into specialized, purpose-built endpoints that serve your application's exact needs.
 
+## Demo
+
+Watch our demo videos to see EZ AI Agent in action:
+
+### General Demo
+
+[![EZ AI Agent Demo](https://img.youtube.com/vi/wF2G0HhhmbQ/0.jpg)](https://youtu.be/wF2G0HhhmbQ)
+
+### JavaScript Mentor Demo
+
+[![JavaScript Mentor Demo](https://img.youtube.com/vi/UvLXyXWF_Kg/0.jpg)](https://youtu.be/UvLXyXWF_Kg)
+
 ## Tech Stack
 
 - **Frontend**: React + Vite
