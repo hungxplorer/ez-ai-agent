@@ -12,13 +12,13 @@ The core functionality of EZ AI Agent is to create new custom APIs that wrap aro
 
 Watch our demo videos to see EZ AI Agent in action:
 
-### General Demo
+### English Grammar Checker Demo
 
-[![EZ AI Agent Demo](https://img.youtube.com/vi/wF2G0HhhmbQ/0.jpg)](https://youtu.be/wF2G0HhhmbQ)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/wF2G0HhhmbQ?si=lcmlZGAWzdAZuuA1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ### JavaScript Mentor Demo
 
-[![JavaScript Mentor Demo](https://img.youtube.com/vi/UvLXyXWF_Kg/0.jpg)](https://youtu.be/UvLXyXWF_Kg)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/UvLXyXWF_Kg?si=RRRqXb1RtBG-QKmW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Tech Stack
 
